@@ -1,36 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
-import { User } from "./types/User";
-import { useForm } from "./useForm";
+import Hello from "./Hello";
+import { useFetch } from "./useFetch";
 
-function App() {
-  const userObject: User = {
-    id: 1,
-    name: "kubicodes",
-  };
+const App = () => {
+  const [showHelloWorld, setShowHelloWorld] = useState<boolean>(true);
+  const [userIdToDisplay, setUserIdToDisplay] = useState<number>(1);
 
-  const [values, handleChange] = useForm(userObject);
+  const apiUrl = `https://jsonplaceholder.typicode.com/users/${userIdToDisplay}`;
+
+  const { data, loading } = useFetch(apiUrl);
 
   return (
     <div>
-      {/* <h1>Hello World</h1>
-      <button
-        // works also with callback
-        // onClick={() => {
-        //   setUser((prevState) => {
-        //     return { ...prevState, name: "New Name" };
-        //   });
-        // }}
-
-        // onClick={() => setUser({ ...user, name: "New Name" })}
-      >
-        Click me
+      <button onClick={() => setShowHelloWorld(!showHelloWorld)}>
+        Toggle Hello World
       </button>
-      <div>{user.name}</div> */}
+      {showHelloWorld ? <Hello /> : null}
 
-      <input name="username" value={values.name} onChange={handleChange} />
+      <br />
+      <p>User ID To Display</p>
+      <input
+        type={"number"}
+        min={1}
+        max={10}
+        value={userIdToDisplay}
+        onChange={(e) => setUserIdToDisplay(parseInt(e.target.value))}
+      ></input>
+
+      <h4>User with ID {userIdToDisplay}</h4>
+      {loading ? <div>loading ....</div> : <pre>{JSON.stringify(data)}</pre>}
     </div>
   );
-}
+};
 
 export default App;
